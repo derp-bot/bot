@@ -56,7 +56,7 @@ jobs:
       - name: Configure SSH
         env:
           SSH_KEY: ${{ secrets.DERP_PRIVATE_SSH_KEY }}
-          SSH_HOST: ${{ steps.host-ip.derp-ip }}
+          SSH_HOST: ${{ steps.host-ip.outputs.derp-ip }}
         run: |
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" > ~/.ssh/derp.key
