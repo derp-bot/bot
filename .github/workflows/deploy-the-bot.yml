@@ -70,5 +70,8 @@ jobs:
           END
 
       - name: Deploy that bot!
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
         run: bin/deploy.sh
 
