@@ -21,9 +21,8 @@ jobs:
 
       - name: Log into Docker Hub
         env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_USERNAME }}
-          REGISTRY_URL: https://yourpants.com
+          DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
         run: |
           echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
 
