@@ -1,0 +1,26 @@
+{
+  "name": "derp-bot",
+  "version": "0.0.1",
+  "description": "The actual bot itself.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": ". etc/local.env && nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/derp-bot/bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/derp-bot/bot/issues"
+  },
+  "homepage": "https://github.com/derp-bot/bot#readme",
+  "dependencies": {
+    "discord.js": "12.5.3"
+  },
+  "devDependencies": {
+    "nodemon": "2.0.7"
+  }
+}
