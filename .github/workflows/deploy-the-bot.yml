@@ -47,10 +47,27 @@ jobs:
       - name: Checkout...
         uses: actions/checkout@v2
 
-      - name: Set up private key to server
-        uses: webfactory/ssh-agent@v0.5.2
-        with:
-          ssh-private-key: ${{ secrets.DERP_PRIVATE_SSH_KEY }}
+      - name: Find derp-bot host IP
+        id: host-ip
+        run: |
+          DERP_IP=$(curl --silent "https://api.vultr.com/v2/instances?label=derp-bot" -X GET -H "Authorization: Bearer ${VULTR_API_KEY}" | jq --raw-output .instances[0].main_ip)
+          echo "::set-output name=derp-ip::$DERP_IP"
+
+      - name: Configure SSH
+        env:
+          SSH_KEY: ${{ secrets.DERP_PRIVATE_SSH_KEY }}
+          SSH_HOST: ${{ steps.host-ip.derp-ip }}
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/derp.key
+          chmod 600 ~/.ssh/derp.key
+          cat >>~/.ssh/config <<END
+          Host derp
+            HostName $SSH_HOST
+            User root
+            IdentityFile ~/.ssh/derp.key
+            StrictHostKeyChecking no
+          END
 
       - name: Deploy that bot!
         run: bin/deploy.sh
