@@ -1,0 +1,46 @@
+name: Deploy the Bot
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  CONTAINER_NAME: drhayes/derp
+
+jobs:
+  build:
+    name: Build the Docker container
+    runs-on: ubuntu-latest
+    environment: prod
+    env:
+      DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+    steps:
+      - name: Checkout...
+        uses: actions/checkout@v2
+
+      - name: Log into Docker Hub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_USERNAME }}
+          REGISTRY_URL: https://yourpants.com
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+
+      - name: Build container
+        run: docker build . --file Dockerfile --tag ${CONTAINER_NAME}:latest --tag ${CONTAINER_NAME}:${{ github.sha }}
+
+      - name: Push images
+        run: |
+          docker push ${CONTAINER_NAME}:latest
+          docker push ${CONTAINER_NAME}:${{ github.sha }}
+
+  # deploy:
+  #   name: Deploy the Docker container
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - build
+  #   environment: prod
+  #   env:
+  #     DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+
