@@ -14,8 +14,8 @@ if [ -z "${VULTR_API_KEY}" ]; then
 fi
 
 # What is the IP of the server?
-DERP_SERVER_IP=$(curl --silent "https://api.vultr.com/v2/instances?label=derp-bot" -X GET -H "Authorization: Bearer ${VULTR_API_KEY}"\
-  | jq --raw-output .instances[0].main_ip)
-echo "The IP of the Vultr server is $DERP_SERVER_IP"
+# DERP_SERVER_IP=$(curl --silent "https://api.vultr.com/v2/instances?label=derp-bot" -X GET -H "Authorization: Bearer ${VULTR_API_KEY}"\
+#   | jq --raw-output .instances[0].main_ip)
+# echo "The IP of the Vultr server is $DERP_SERVER_IP"
 
-ssh root@$DERP_SERVER_IP "DOCKER_USERNAME=$DOCKER_USERNAME DOCKER_PASSWORD=$DOCKER_PASSWORD CONTAINER_NAME=$CONTAINER_NAME DISCORD_BOT_TOKEN=$DISCORD_BOT_TOKEN exec bash" < "$MY_DIR/run-latest-derp.sh"
+ssh derp "DOCKER_USERNAME=$DOCKER_USERNAME DOCKER_PASSWORD=$DOCKER_PASSWORD CONTAINER_NAME=$CONTAINER_NAME DISCORD_BOT_TOKEN=$DISCORD_BOT_TOKEN exec bash" < "$MY_DIR/run-latest-derp.sh"
