@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+env:
+  CONTAINER_NAME: drhayes/derp
+
 jobs:
   build:
     name: Build and push the Docker container
