@@ -70,5 +70,6 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          SSH_HOST: ${{ steps.host-ip.outputs.derp-ip }}
         run: bin/deploy.sh
 
