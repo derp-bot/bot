@@ -43,20 +43,29 @@ jobs:
     needs:
       - build
     environment: prod
-    env:
-      DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
-      VULTR_API_KEY: ${{ secrets.VULTR_API_KEY }}
     steps:
-      - name: Checkout...
+      -
+        name: Checkout...
         uses: actions/checkout@v2
 
-      - name: Find derp-bot host IP
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      -
+        name: Find derp-bot host IP
         id: host-ip
+        env:
+          VULTR_API_KEY: ${{ secrets.VULTR_API_KEY }}
         run: |
           DERP_IP=$(curl --silent "https://api.vultr.com/v2/instances?label=derp-bot" -X GET -H "Authorization: Bearer ${VULTR_API_KEY}" | jq --raw-output .instances[0].main_ip)
           echo "::set-output name=derp-ip::$DERP_IP"
 
-      - name: Configure SSH
+      -
+        name: Configure SSH
         env:
           SSH_KEY: ${{ secrets.DERP_PRIVATE_SSH_KEY }}
           SSH_HOST: ${{ steps.host-ip.outputs.derp-ip }}
@@ -66,10 +75,12 @@ jobs:
           chmod 600 ~/.ssh/derp.key
           ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
 
-      - name: Deploy that bot!
+      -
+        name: Deploy that bot!
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
           SSH_HOST: ${{ steps.host-ip.outputs.derp-ip }}
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
         run: bin/deploy.sh
 
