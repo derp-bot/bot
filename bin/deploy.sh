@@ -20,8 +20,6 @@ docker context create remote --docker "host=ssh://root@${SSH_HOST}"
 docker context use remote
 
 # Force an update of things.
-docker-compose --project-directory ${MY_DIR}/.. stop
-docker-compose --project-directory ${MY_DIR}/.. rm -f bot
 docker-compose --project-directory ${MY_DIR}/.. pull
 # Stand it back up.
 docker-compose --project-directory ${MY_DIR}/.. up --detach

@@ -11,7 +11,7 @@ setInterval(() => {
       body: '💙',
     })
     .then(() => {
-      console.log('💙');
+      console.log('💙!');
     })
     .catch(error => {
       console.error(`error:heartbeat`, error);
