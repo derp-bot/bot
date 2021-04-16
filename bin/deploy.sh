@@ -16,7 +16,7 @@ MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # ssh root@${SSH_HOST} -i ~/.ssh/derp.key "DOCKER_USERNAME=$DOCKER_USERNAME DOCKER_PASSWORD=$DOCKER_PASSWORD CONTAINER_NAME=$CONTAINER_NAME DISCORD_BOT_TOKEN=$DISCORD_BOT_TOKEN exec bash" < "$MY_DIR/run-latest-derp.sh"
 
 # Create the remote context we'll use to get at our machine's docker daemon.
-docker context create remote ‐‐docker "host=ssh://root@${SSH_HOST}"
+docker context create remote --docker "host=ssh://root@${SSH_HOST}"
 docker context use remote
 
 docker-compose up --detach ${MY_DIR}/..
