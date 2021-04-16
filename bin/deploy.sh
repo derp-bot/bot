@@ -19,4 +19,4 @@ MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 docker context create remote --docker "host=ssh://root@${SSH_HOST}"
 docker context use remote
 
-docker-compose up --detach ${MY_DIR}/..
+docker-compose --project-directory ${MY_DIR}/.. up --detach
