@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  bot:
+    image: "drhayes/derp:latest"
+    environment:
+      - NODE_ENV=production
+      - DISCORD_BOT_TOKEN
+    network_mode: bridge
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 3
+      window: 60s
