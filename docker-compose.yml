@@ -2,12 +2,15 @@ version: "3.9"
 services:
   bot:
     image: "drhayes/derp:latest"
+    container_name: derp-bot
     environment:
       - NODE_ENV=production
       - DISCORD_BOT_TOKEN
     network_mode: bridge
-    restart_policy:
-      condition: on-failure
-      delay: 5s
-      max_attempts: 3
-      window: 60s
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 60s
