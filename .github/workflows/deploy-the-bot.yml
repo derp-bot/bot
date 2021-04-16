@@ -64,13 +64,7 @@ jobs:
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" > ~/.ssh/derp.key
           chmod 600 ~/.ssh/derp.key
-          cat >>~/.ssh/config <<END
-          Host derp
-            HostName $SSH_HOST
-            User root
-            IdentityFile ~/.ssh/derp.key
-            StrictHostKeyChecking no
-          END
+          ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
 
       - name: Deploy that bot!
         env:
