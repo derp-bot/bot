@@ -6,6 +6,7 @@ const { setIntervalAsync } = require('set-interval-async/fixed');
 const { DISCORD_BOT_TOKEN, HEARTBEAT_HEALTHCHECKS_IO_URL } = process.env;
 
 setIntervalAsync(async () => {
+  console.log('💙');
   // Send a heartbeat request to our healtcheck so it knows we're alive.
   try {
     await got.post(HEARTBEAT_HEALTHCHECKS_IO_URL, {
