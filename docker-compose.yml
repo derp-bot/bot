@@ -6,6 +6,7 @@ services:
     environment:
       - NODE_ENV=production
       - DISCORD_BOT_TOKEN
+      - HEARTBEAT_HEALTHCHECKS_IO_URL
     network_mode: bridge
     deploy:
       replicas: 1

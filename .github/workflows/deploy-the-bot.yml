@@ -84,5 +84,6 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
           SSH_HOST: ${{ steps.host-ip.outputs.derp-ip }}
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          HEARTBEAT_HEALTHCHECKS_IO_URL: ${{ secrets.HEARTBEAT_HEALTHCHECKS_IO_URL }}
         run: bin/deploy.sh
 
