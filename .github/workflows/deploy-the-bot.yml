@@ -65,15 +65,16 @@ jobs:
           echo "::set-output name=derp-ip::$DERP_IP"
 
       -
-        name: Configure SSH
+        name: Start an SSH agent
+        uses: webfactory/ssh-agent@v0.5.2
+        with:
+            ssh-private-key: ${{ secrets.DERP_PRIVATE_SSH_KEY }}
+
+      -
+        name: Configure known-hosts
         env:
-          SSH_KEY: ${{ secrets.DERP_PRIVATE_SSH_KEY }}
           SSH_HOST: ${{ steps.host-ip.outputs.derp-ip }}
         run: |
-          mkdir -p ~/.ssh/
-          echo "$SSH_KEY" > ~/.ssh/derp.key
-          chmod 600 ~/.ssh/derp.key
-          ssh-add ~/.ssh/derp.key
           ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
 
       -
