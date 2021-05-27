@@ -1,6 +1,6 @@
 import { Client } from 'discord.js-light';
-import PluginRegistry from './pluginRegistry';
-import Plugin from './plugin';
+import PluginRegistry from './plugins/pluginRegistry';
+import Plugin from './plugins/plugin';
 
 export class Bot {
   private registry: PluginRegistry;

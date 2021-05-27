@@ -8,7 +8,7 @@
     "lint": "tslint --project .",
     "lint:fix": "tslint --fix --project .",
     "build": "tsc",
-    "start:dev": "ts-node-dev --watch src/**/*.ts src/start.ts",
+    "start:dev": "ts-node-dev src/start.ts",
     "start": "node dist/start.js"
   },
   "repository": {
