@@ -1,1 +1,4 @@
-.env
+etc/local.env
+node_modules
+.github
+.vscode
