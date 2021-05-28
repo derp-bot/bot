@@ -1,16 +1,15 @@
 import { Message } from 'discord.js';
 import { Bot } from '../bot';
-import Plugin from './plugin';
-import PluginContext from './pluginContext';
 import config from '../config';
+import Plugin from './plugin';
 
 const { commandPrefix} = config;
 
 export type StopFunction = () => void;
 
-export type ReadyHandler = (context: PluginContext, stop: StopFunction) => Promise<void>;
+export type ReadyHandler = (stop: StopFunction) => Promise<void>;
 
-export type CommandHandler = (context: PluginContext, stop: StopFunction) => Promise<void>;
+export type CommandHandler = (message: Message, stop: StopFunction) => Promise<void>;
 
 export type PluginHelper = {
   onReady(ReadyHandler): Promise<void>;
@@ -55,12 +54,11 @@ export default class PluginRegistry {
   }
 
   public async onReady(): Promise<void> {
-    const context = new PluginContext(this.bot);
     let stopNow = false;
     const stop = () => { stopNow = true };
     for (let index = 0; index < this.readyHandlers.length; index++) {
       const handler = this.readyHandlers[index];
-      await handler(context, stop);
+      await handler(stop);
       if (stopNow) {
         return;
       }
@@ -68,7 +66,6 @@ export default class PluginRegistry {
   }
 
   public async onMessage(message: Message): Promise<void> {
-    const context = new PluginContext(this.bot);
     let stopNow = false;
     const stop = () => { stopNow = true }
     // Is this thing a command? If so, it'll start with the prefix.
@@ -80,7 +77,7 @@ export default class PluginRegistry {
       if (handlers) {
         for (let index = 0; index < handlers.length; index++) {
           const handler = handlers[index];
-          await handler(context, stop);
+          await handler(message, stop);
           if (stop) {
             return;
           }

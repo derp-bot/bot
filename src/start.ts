@@ -1,7 +1,7 @@
 import { Bot } from './bot';
 import config from './config';
-import readyLogger from './plugins/readyLogger';
 import dieCommand from './plugins/dieCommand';
+import readyLogger from './plugins/readyLogger';
 
 async function main(): Promise<void> {
   if (!config.token) {
