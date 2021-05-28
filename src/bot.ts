@@ -37,10 +37,11 @@ export class Bot {
     }
   }
 
-  public async onReady() {
+  public async onReady(): Promise<void> {
     await this.registry.onReady();
   }
 
-  public async onMessage(message: Message) {}
-
+  public async onMessage(message: Message): Promise<void> {
+    await this.registry.onMessage(message);
+  }
 }

@@ -1,7 +1,7 @@
 import { Bot } from './bot';
 import config from './config';
-// import DieCommand from './plugins/dieCommand';
 import readyLogger from './plugins/readyLogger';
+import dieCommand from './plugins/dieCommand';
 
 async function main(): Promise<void> {
   if (!config.token) {
@@ -12,7 +12,7 @@ async function main(): Promise<void> {
   const derpBot = new Bot(config.token);
 
   derpBot.use(readyLogger());
-  // derpBot.add(new DieCommand());
+  derpBot.use(dieCommand());
 
   await derpBot.start();
 }

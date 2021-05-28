@@ -1,16 +1,12 @@
 import Plugin from './plugin';
 import PluginContext from './pluginContext';
+import { PluginHelper } from './pluginRegistry';
 
-export default class DieCommand extends Plugin {
-  constructor() {
-    super(['message']);
-  }
-
-  async onMessage(context: PluginContext): Promise<void> {
-    const { message } = context.data;
-    if (message.content === '!die') {
-      console.log('Time to die.');
+export default function dieCommand(deathMessage = 'Time to die.'): Plugin {
+  return async function ({ onCommand, logger }: PluginHelper) {
+    onCommand('die', async (_context: PluginContext): Promise<void> => {
+      await logger.info(deathMessage);
       process.exit(0);
-    }
-  }
+    });
+  };
 }
