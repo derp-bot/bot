@@ -1,5 +1,5 @@
-import { PluginHelper } from './pluginRegistry';
+import { PluginContext } from './pluginRegistry';
 
-type Plugin = (helper: PluginHelper) => Promise<void>;
+type Plugin = (context: PluginContext) => Promise<void>;
 
 export default Plugin;

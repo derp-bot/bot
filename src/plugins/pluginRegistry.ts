@@ -11,14 +11,14 @@ export type ReadyHandler = (stop: StopFunction) => Promise<void>;
 
 export type CommandHandler = (message: Message, stop: StopFunction) => Promise<void>;
 
-export type PluginHelper = {
+export type PluginContext = {
   onReady(ReadyHandler): Promise<void>;
   onCommand(command: string, CommandHandler): Promise<void>;
   logger: any;
 };
 
 export default class PluginRegistry {
-  private helper: PluginHelper;
+  private helper: PluginContext;
 
   private readyHandlers: ReadyHandler[];
   private commandHandlers: Map<string, CommandHandler[]>;
@@ -32,7 +32,7 @@ export default class PluginRegistry {
         this.readyHandlers.push(handler);
       },
 
-      onCommand: async (command:  string, handler: CommandHandler) => {
+      onCommand: async (command: string, handler: CommandHandler) => {
         let handlers = this.commandHandlers.get(command);
         if (!handlers) {
           handlers = [];
@@ -55,7 +55,9 @@ export default class PluginRegistry {
 
   public async onReady(): Promise<void> {
     let stopNow = false;
-    const stop = () => { stopNow = true };
+    const stop = () => {
+      stopNow = true;
+    };
     for (let index = 0; index < this.readyHandlers.length; index++) {
       const handler = this.readyHandlers[index];
       await handler(stop);
@@ -67,7 +69,9 @@ export default class PluginRegistry {
 
   public async onMessage(message: Message): Promise<void> {
     let stopNow = false;
-    const stop = () => { stopNow = true }
+    const stop = () => {
+      stopNow = true;
+    };
     // Is this thing a command? If so, it'll start with the prefix.
     if (message.content.startsWith(commandPrefix)) {
       // Do command things.
