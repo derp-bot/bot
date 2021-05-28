@@ -1,19 +1,21 @@
 import { Message } from 'discord.js';
-import { Bot } from '../bot';
 import config from '../config';
 import Plugin from './plugin';
 
-const { commandPrefix} = config;
+const { commandPrefix } = config;
 
 export type StopFunction = () => void;
 
 export type ReadyHandler = (stop: StopFunction) => Promise<void>;
 
-export type CommandHandler = (message: Message, stop: StopFunction) => Promise<void>;
+export type CommandHandler = (
+  message: Message,
+  stop: StopFunction,
+) => Promise<void>;
 
 export type PluginContext = {
-  onReady(ReadyHandler): Promise<void>;
-  onCommand(command: string, CommandHandler): Promise<void>;
+  onReady(handler: ReadyHandler): Promise<void>;
+  onCommand(command: string, handler: CommandHandler): Promise<void>;
   logger: any;
 };
 
@@ -23,7 +25,7 @@ export default class PluginRegistry {
   private readyHandlers: ReadyHandler[];
   private commandHandlers: Map<string, CommandHandler[]>;
 
-  constructor(private bot: Bot) {
+  constructor() {
     this.readyHandlers = [];
     this.commandHandlers = new Map<string, CommandHandler[]>();
 
@@ -58,8 +60,7 @@ export default class PluginRegistry {
     const stop = () => {
       stopNow = true;
     };
-    for (let index = 0; index < this.readyHandlers.length; index++) {
-      const handler = this.readyHandlers[index];
+    for (const handler of this.readyHandlers) {
       await handler(stop);
       if (stopNow) {
         return;
@@ -79,10 +80,9 @@ export default class PluginRegistry {
       // TODO: This is really dumb right now, should only look at first word or something.
       const handlers = this.commandHandlers.get(command);
       if (handlers) {
-        for (let index = 0; index < handlers.length; index++) {
-          const handler = handlers[index];
+        for (const handler of handlers) {
           await handler(message, stop);
-          if (stop) {
+          if (stopNow) {
             return;
           }
         }

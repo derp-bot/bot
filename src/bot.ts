@@ -7,7 +7,7 @@ export class Bot {
   private client: Client;
 
   constructor(private token: string) {
-    this.registry = new PluginRegistry(this);
+    this.registry = new PluginRegistry();
     this.client = new Client({
       cacheChannels: false,
       cacheEmojis: false,
