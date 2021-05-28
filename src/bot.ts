@@ -1,4 +1,4 @@
-import { Client } from 'discord.js-light';
+import { Client, Message } from 'discord.js-light';
 import PluginRegistry from './plugins/pluginRegistry';
 import Plugin from './plugins/plugin';
 
@@ -7,7 +7,7 @@ export class Bot {
   private client: Client;
 
   constructor(private token: string) {
-    this.registry = new PluginRegistry();
+    this.registry = new PluginRegistry(this);
     this.client = new Client({
       cacheChannels: false,
       cacheEmojis: false,
@@ -18,26 +18,29 @@ export class Bot {
     });
 
     this.client.on('ready', () => {
-      this.registry.runEventHandler('ready');
+      this.onReady();
     });
     this.client.on('message', message => {
-      this.registry.runEventHandler('message', { message });
+      this.onMessage(message);
     });
   }
 
-  public register(plugin: Plugin): void {
+  public use(plugin: Plugin): void {
     this.registry.add(plugin);
   }
 
   public async start(): Promise<void> {
-    await this.login();
-  }
-
-  private async login(): Promise<void> {
     try {
       await this.client.login(this.token);
     } catch (error) {
       console.error(error);
     }
   }
+
+  public async onReady() {
+    await this.registry.onReady();
+  }
+
+  public async onMessage(message: Message) {}
+
 }
