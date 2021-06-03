@@ -44,7 +44,7 @@ export default class PluginRegistry {
       },
 
       logger: {
-        info: message => {
+        info: (message: string) => {
           console.log(message);
         },
       },
@@ -76,8 +76,8 @@ export default class PluginRegistry {
     // Is this thing a command? If so, it'll start with the prefix.
     if (message.content.startsWith(commandPrefix)) {
       // Do command things.
-      const command = message.content.substr(1);
       // TODO: This is really dumb right now, should only look at first word or something.
+      const command = message.content.substr(1);
       const handlers = this.commandHandlers.get(command);
       if (handlers) {
         for (const handler of handlers) {
