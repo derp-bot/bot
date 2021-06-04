@@ -1,7 +1,8 @@
-import { Client, Message } from 'discord.js-light';
+import { Client, Message, MessageReaction, User } from 'discord.js-light';
 import { fromEvent, Observable } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
 import { CommandMessage, isCommand, toCommandMessage } from './commands';
+import { ReactionMessage } from './reactions';
 
 export class Bot {
   private token: string;
@@ -50,7 +51,41 @@ export class Bot {
       );
   }
 
-  public use(): void {
+  public getReactions() {
+    return new Observable<ReactionMessage>((subscribe) => {
+      this.client.on('messageReactionAdd', async (reaction: MessageReaction, user: User) => {
+        // If the author is null re-fetch the message.
+        // TODO: Is this hilariously slow?
+        if (!reaction.message.author) {
+          reaction.message = await reaction.message.fetch(true);
+        }
+        subscribe.next({
+          action: 'add',
+          reaction,
+          user,
+          reply: async (text: string) => reaction.message.channel.send(text),
+        });
+      });
+      this.client.on('messageReactionRemove', async (reaction: MessageReaction, user: User) => {
+        // If the author is null re-fetch the message.
+        if (!reaction.message.author) {
+          reaction.message = await reaction.message.fetch(true);
+        }
+        subscribe.next({
+          action: 'remove',
+          reaction,
+          user,
+          reply: async (text: string) => reaction.message.channel.send(text),
+        });
+      });
+    });
+  }
+
+  public isMyMessage(message: Message): boolean {
+    if (!message.author) {
+      console.warn('message.author is falsy, probably need to fetch this message before calling this');
+    }
+    return message.author == this.client.user;
   }
 
   public async start(): Promise<void> {

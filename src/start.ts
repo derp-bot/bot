@@ -1,7 +1,6 @@
 import { Bot } from './bot';
 import config from './config';
-import dieCommand from './plugins/dieCommand';
-import readyLogger from './plugins/readyLogger';
+import plugins from './plugins';
 
 async function main(): Promise<void> {
   if (!config.token) {
@@ -13,8 +12,8 @@ async function main(): Promise<void> {
     token: config.token,
   });
 
-  readyLogger(derpBot);
-  dieCommand(derpBot);
+  // Run all the plugin things.
+  Object.values(plugins).forEach(plugin => plugin(derpBot));
 
   await derpBot.start();
 }
