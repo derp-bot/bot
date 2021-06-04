@@ -1,10 +1,12 @@
-import Plugin from './plugin';
-import { PluginContext } from './pluginRegistry';
+import { Subscription } from "rxjs";
+import { Bot } from "../bot";
 
-export default function readyLogger(): Plugin {
-  return async ({ onReady, logger }: PluginContext): Promise<void> => {
-    onReady(async (): Promise<void> => {
-      await logger.info('Bot is ready to go.');
-    });
-  };
+export default function readyLogger(bot: Bot): void {
+  let subscription: Subscription;
+  subscription = bot.getReady().subscribe(isReady => {
+    if (isReady) {
+      console.log('Bot is ready to go.');
+      subscription.unsubscribe();
+    }
+  });
 }

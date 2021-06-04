@@ -1,14 +1,12 @@
-import { Message } from 'discord.js';
-import Plugin from './plugin';
-import { PluginContext } from './pluginRegistry';
+import { Subscription } from "rxjs";
+import { Bot } from "../bot";
+import { CommandMessage } from "../commands";
 
-export default function dieCommand(
-  deathMessage: string = 'Time to die.',
-): Plugin {
-  return async ({ onCommand, logger }: PluginContext): Promise<void> => {
-    onCommand('die', async (_message: Message): Promise<void> => {
-      await logger.info(deathMessage);
-      process.exit(0);
-    });
-  };
+export default function dieCommand(bot: Bot) {
+  let subscription: Subscription;
+  subscription = bot.listenForCommand('die').subscribe(async (command: CommandMessage) => {
+    await command.message.reply('Your wish is my command.');
+    subscription.unsubscribe();
+    process.exit(0);
+  });
 }

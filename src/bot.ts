@@ -1,13 +1,22 @@
 import { Client, Message } from 'discord.js-light';
-import Plugin from './plugins/plugin';
-import PluginRegistry from './plugins/pluginRegistry';
+import { fromEvent, Observable } from 'rxjs';
+import { filter, map, tap } from 'rxjs/operators';
+import { CommandMessage, isCommand, toCommandMessage } from './commands';
 
 export class Bot {
-  private registry: PluginRegistry;
+  private token: string;
+  private commandPrefix: string;
   private client: Client;
 
-  constructor(private token: string) {
-    this.registry = new PluginRegistry();
+  constructor({
+    token,
+    commandPrefix,
+  }: {
+    token: string,
+    commandPrefix?: string,
+  }) {
+    this.token = token;
+    this.commandPrefix = commandPrefix || '!';
     this.client = new Client({
       cacheChannels: false,
       cacheEmojis: false,
@@ -16,17 +25,31 @@ export class Bot {
       cachePresences: false,
       cacheRoles: false,
     });
+  }
 
-    this.client.on('ready', () => {
-      this.onReady();
-    });
-    this.client.on('message', message => {
-      this.onMessage(message);
+  public getReady(): Observable<boolean> {
+    return new Observable(subscribe => {
+      subscribe.next(false);
+      this.client.once('ready', () => {
+        subscribe.next(true);
+        subscribe.complete();
+      });
     });
   }
 
-  public use(plugin: Plugin): void {
-    this.registry.add(plugin);
+  public getMessages(): Observable<Message> {
+    return fromEvent(this.client, 'message') as Observable<Message>;
+  }
+
+  public listenForCommand(name: string): Observable<CommandMessage> {
+    return this.getMessages()
+      .pipe(
+        filter(isCommand),
+        map(toCommandMessage),
+      );
+  }
+
+  public use(): void {
   }
 
   public async start(): Promise<void> {
@@ -35,13 +58,5 @@ export class Bot {
     } catch (error) {
       console.error(error);
     }
-  }
-
-  public async onReady(): Promise<void> {
-    await this.registry.onReady();
-  }
-
-  public async onMessage(message: Message): Promise<void> {
-    await this.registry.onMessage(message);
   }
 }

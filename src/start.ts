@@ -9,10 +9,12 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const derpBot = new Bot(config.token);
+  const derpBot = new Bot({
+    token: config.token,
+  });
 
-  derpBot.use(readyLogger());
-  derpBot.use(dieCommand());
+  readyLogger(derpBot);
+  dieCommand(derpBot);
 
   await derpBot.start();
 }
