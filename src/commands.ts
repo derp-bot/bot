@@ -24,7 +24,7 @@ export const toCommandMessage = (message: Message): CommandMessage => {
   return {
     message,
     command: {
-      name: commandName.toLowerCase().trim(),
+      name: commandName.toLowerCase().trim().substring(1),
       args,
     }
   };

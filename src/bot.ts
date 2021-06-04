@@ -46,6 +46,7 @@ export class Bot {
       .pipe(
         filter(isCommand),
         map(toCommandMessage),
+        filter(({ command }) => command.name === name)
       );
   }
 
