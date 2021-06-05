@@ -1,4 +1,5 @@
 import { Client, Message, MessageReaction, User } from 'discord.js-light';
+import got from 'got/dist/source';
 import { fromEvent, Observable } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
 import { CommandMessage, isCommand, toCommandMessage } from './commands';
@@ -8,6 +9,7 @@ export class Bot {
   private token: string;
   private commandPrefix: string;
   private client: Client;
+  private heartbeat: NodeJS.Timeout;
 
   constructor({
     token,
@@ -91,8 +93,22 @@ export class Bot {
   public async start(): Promise<void> {
     try {
       await this.client.login(this.token);
+      this.startHeartbeat();
     } catch (error) {
       console.error(error);
     }
+  }
+
+  private startHeartbeat() {
+    if (!process.env.HEARTBEAT_HEALTHCHECKS_IO_URL) {
+      return;
+    }
+    this.heartbeat = setInterval(() => {
+      // Let our healthcheck know we're alive.
+      got(process.env.HEARTBEAT_HEALTHCHECKS_IO_URL)
+        .catch(error => {
+          console.error('Error during heartbeat', error);
+        })
+    }, 1 * 60 * 1000)
   }
 }
