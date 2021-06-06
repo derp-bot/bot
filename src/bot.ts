@@ -109,6 +109,6 @@ export class Bot {
         .catch(error => {
           console.error('Error during heartbeat', error);
         })
-    }, 1 * 60 * 1000)
+    }, 3 * 60 * 1000)
   }
 }
