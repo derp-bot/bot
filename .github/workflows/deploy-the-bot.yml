@@ -55,10 +55,7 @@ jobs:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           HEARTBEAT_HEALTHCHECKS_IO_URL: ${{ secrets.HEARTBEAT_HEALTHCHECKS_IO_URL }}
         run: |
-          tmp=$(mktemp)
-          cat task-definition.json | \
-            jq '.environment[0]={"name":"DISCORD_BOT_TOKEN","value":"${DISCORD_BOT_TOKEN}"}" | .environment[1]={"name":"HEARTBEAT_HEALTHCHECKS_IO_URL","value":"${HEARTBEAT_HEALTHCHECKS_IO_URL}"}" | del(.["taskDefinitionArn", "revision", "status", "requiresAttributes", "compatibilities"])' \
-            > "$tmp" && mv "$tmp" task-definition.json
+          node scripts/substituteEnvVars.js task-definition.json
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1

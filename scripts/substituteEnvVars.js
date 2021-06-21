@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 
 const envVarNames = [
   'DISCORD_BOT_TOKEN',
@@ -30,6 +31,4 @@ deleteTheseKeys.forEach(key => {
   delete taskDefinition[key];
 });
 
-console.log(JSON.stringify(taskDefinition, null, 2));
-
-// await fs.writeFile(taskDefinitionPath, JSON.stringify(taskDefinition, null, 2));
+fs.writeFileSync(taskDefinitionPath, JSON.stringify(taskDefinition, null, 2));
