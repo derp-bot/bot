@@ -17,6 +17,7 @@ const deleteTheseKeys = [
 // Load our task def.
 const taskDefinitionPath = path.relative(__dirname, path.resolve(process.argv[process.argv.length - 1]));
 const taskDefinition = require(taskDefinitionPath);
+const newTaskDefinitionPath = path.resolve('task-definition.json');
 
 // Set our environment variables.
 const environmentVars = taskDefinition.environment || [];
@@ -31,4 +32,6 @@ deleteTheseKeys.forEach(key => {
   delete taskDefinition[key];
 });
 
-fs.writeFileSync(taskDefinitionPath, JSON.stringify(taskDefinition, null, 2));
+fs.writeFileSync(newTaskDefinitionPath, JSON.stringify(taskDefinition, null, 2));
+
+console.log(`::set-output name=task-definition::${newTaskDefinitionPath}`);
