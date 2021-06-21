@@ -55,7 +55,7 @@ jobs:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           HEARTBEAT_HEALTHCHECKS_IO_URL: ${{ secrets.HEARTBEAT_HEALTHCHECKS_IO_URL }}
         run: |
-          node scripts/substituteEnvVars.js task-definition.json
+          node scripts/substituteEnvVars.js ${{ steps.task-def.outputs.task-definition }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
