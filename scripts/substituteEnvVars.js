@@ -12,6 +12,8 @@ const deleteTheseKeys = [
   'status',
   'requiresAttributes',
   'compatibilities',
+  'registeredAt',
+  'registeredBy',
 ]
 
 // Load our task def.
@@ -19,15 +21,16 @@ const taskDefinitionPath = path.relative(__dirname, path.resolve(process.argv[pr
 const taskDefinition = require(taskDefinitionPath);
 const newTaskDefinitionPath = path.resolve('task-definition.json');
 
-// Set our environment variables.
-const environmentVars = taskDefinition.environment || [];
+// Set our environment variables for our single container.
+const [ derpContainer ] = taskDefinition.containerDefinitions;
+const environmentVars = derpContainer.environment || [];
 const newEnvironmentVars = environmentVars.concat(envVarNames.map(name => ({
   name,
   value: process.env[name],
 })));
-taskDefinition.environment = newEnvironmentVars;
+derpContainer.environment = newEnvironmentVars;
 
-// Delete the values we should'nt be sending back.
+// Delete the values we shouldn't be sending back.
 deleteTheseKeys.forEach(key => {
   delete taskDefinition[key];
 });
