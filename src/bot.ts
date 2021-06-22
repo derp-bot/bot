@@ -4,6 +4,7 @@ import { fromEvent, Observable } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
 import { CommandMessage, isCommand, toCommandMessage } from './commands';
 import { ReactionMessage } from './reactions';
+import config from './config';
 
 export class Bot {
   private token: string;
@@ -42,6 +43,13 @@ export class Bot {
 
   public getMessages(): Observable<Message> {
     return fromEvent(this.client, 'message') as Observable<Message>;
+  }
+
+  public getReplies(repliesToThis: Message): Observable<Message> {
+    const referenceId = repliesToThis.id;
+    return this.getMessages().pipe(
+      filter((message: Message) => message.reference?.messageID === referenceId)
+    );
   }
 
   public listenForCommand(name: string): Observable<CommandMessage> {
@@ -100,12 +108,14 @@ export class Bot {
   }
 
   private startHeartbeat() {
-    if (!process.env.HEARTBEAT_HEALTHCHECKS_IO_URL) {
+    const { heartbeatHealthcheckUrl } = config;
+    if (!heartbeatHealthcheckUrl) {
+      console.warn('No healthcheck URL === no heart beat');
       return;
     }
     this.heartbeat = setInterval(() => {
       // Let our healthcheck know we're alive.
-      got(process.env.HEARTBEAT_HEALTHCHECKS_IO_URL)
+      got(heartbeatHealthcheckUrl)
         .catch(error => {
           console.error('Error during heartbeat', error);
         })
