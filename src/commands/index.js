@@ -1,7 +1,6 @@
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const { DERP_BOT_TOKEN, DERP_CLIENT_ID, DERP_GUILD_ID } = require('../config');
-const ping = require('./ping');
+const { DERP_BOT_TOKEN } = require('../config');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { dispatch, spawnStateless } = require('nact');
 const { readdirSync } = require('fs');
@@ -15,21 +14,28 @@ files
     commands.push(command);
   });
 
-const refreshCommands = async () => {
+const refreshCommands = async (client) => {
   const rest = new REST({ version: '9' }).setToken(DERP_BOT_TOKEN);
   const discordCommands = commands
   .map(command => new SlashCommandBuilder().setName(command.name).setDescription(command.description))
   .map(discordCommand => discordCommand.toJSON());
 
   try {
-    console.log('Started refreshing application (/) commands.');
+    console.log('Started refreshing application commands...');
 
-    await rest.put(Routes.applicationGuildCommands(DERP_CLIENT_ID, DERP_GUILD_ID), {
-        body: discordCommands,
-      },
-    );
+    console.log(`Fetching guilds...`);
+    // In the future this should page, no need to do that now.
+    const guilds = await client.guilds.fetch();
+    console.log(`Found ${guilds.size} guilds.`);
 
-    console.log('Successfully reloaded application (/) commands.');
+    console.log(`Sending application guild commands...`);
+    const requests = guilds.map(guild => rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), {
+      body: discordCommands,
+    }));
+
+    await Promise.all(requests);
+
+    console.log('Successfully reloaded application commands.');
   } catch (error) {
     console.error(error);
   }
