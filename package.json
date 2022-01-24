@@ -2,14 +2,9 @@
   "name": "@derp-bot/bot",
   "description": "The actual bot itself.",
   "version": "0.0.1",
-  "main": "src/bot.ts",
+  "main": "src/derp.js",
   "private": "true",
   "scripts": {
-    "lint": "tslint --project .",
-    "lint:fix": "tslint --fix --project .",
-    "build": "tsc",
-    "start:dev": "ts-node-dev src/start.ts",
-    "start": "node dist/start.js"
   },
   "repository": {
     "type": "git",
@@ -21,18 +16,6 @@
     "url": "https://github.com/derp-bot/bot/issues"
   },
   "homepage": "https://github.com/derp-bot/bot#readme",
-  "devDependencies": {
-    "@types/node": "15.6.1",
-    "prettier": "2.3.0",
-    "ts-node-dev": "1.1.6",
-    "tslint": "6.1.3"
-  },
   "dependencies": {
-    "chrono-node": "2.2.6",
-    "discord.js-collector-utils": "1.0.25",
-    "discord.js-light": "3.5.11",
-    "got": "11.8.2",
-    "rxjs": "7.1.0",
-    "typescript": "4.3.2"
   }
 }
