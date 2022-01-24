@@ -5,7 +5,8 @@
   "main": "src/derp.js",
   "private": "true",
   "scripts": {
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "start": "node src/derp.js"
   },
   "repository": {
     "type": "git",
