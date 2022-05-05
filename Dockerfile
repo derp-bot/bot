@@ -17,6 +17,11 @@ RUN apk add --no-cache --virtual .gyp \
 
 ENV NODE_ENV production
 
+ARG GITHUB_SHA=unknown
+ENV GITHUB_SHA=$GITHUB_SHA
+ARG GITHUB_BRANCH=unknown
+ENV GITHUB_BRANCH=$GITHUB_BRANCH
+
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nodejs -u 1001
 
@@ -27,4 +32,4 @@ USER nodejs
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["node", "src/derp.js"]

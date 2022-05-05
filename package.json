@@ -6,7 +6,9 @@
   "private": "true",
   "scripts": {
     "dev": "nodemon",
-    "start": "node src/derp.js"
+    "start": "node src/derp.js",
+    "docker:build": "./scripts/docker-build.sh",
+    "docker:run": "./scripts/docker-run.sh"
   },
   "repository": {
     "type": "git",
