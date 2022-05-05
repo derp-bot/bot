@@ -13,7 +13,7 @@ const { createCommander, refreshCommands } = require('./commands');
 const system = start();
 const commander = createCommander(system);
 
-console.log(`Starting the derp sha:${GITHUB_SHA} branch:${GITHUB_BRANCH}`);
+console.log(`Starting the derp sha:${GITHUB_SHA || 'unknown'} branch:${GITHUB_BRANCH || 'unknown'}`);
 
 const client = new Client({
   intents: [
