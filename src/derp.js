@@ -1,7 +1,11 @@
 // Initialize our environment.
 require('dotenv').config();
 
-const { DERP_BOT_TOKEN } = require('./config');
+const {
+  DERP_BOT_TOKEN,
+  GITHUB_BRANCH,
+  GITHUB_SHA,
+} = require('./config');
 const { Client, Intents } = require('discord.js');
 const { start, dispatch, spawn } = require('nact');
 const { createCommander, refreshCommands } = require('./commands');
@@ -9,6 +13,7 @@ const { createCommander, refreshCommands } = require('./commands');
 const system = start();
 const commander = createCommander(system);
 
+console.log(`Starting the derp sha:${GITHUB_SHA} branch:${GITHUB_BRANCH}`);
 
 const client = new Client({
   intents: [
