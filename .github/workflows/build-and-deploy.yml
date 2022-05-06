@@ -26,6 +26,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/derp-bot/bot:latest
+            ghcr.io/derp-bot/bot:${{ github.sha }}
           build-args: |
             GITHUB_SHA=${{ github.sha }}
 
