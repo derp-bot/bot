@@ -2,22 +2,89 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { DERP_BOT_TOKEN } = require('../config');
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { dispatch, spawnStateless } = require('nact');
+const { dispatch, spawnStateless, spawn, query } = require('nact');
 const { readdirSync } = require('fs');
 
-const commands = [];
+const REGISTER_COMMAND = Symbol('register-command');
+const INVOKE_COMMAND = Symbol('invoke-command');
+const GET_COMMAND_LIST = Symbol('get-command-list');
+
 const files = readdirSync(__dirname);
-files
-  .filter(filename => filename !== 'index.js')
-  .forEach(filename => {
-    const command = require(`./${filename}`);
-    commands.push(command);
+let commander;
+
+const registerCommand = (name, description, cb) => {
+  const childActor = spawnStateless(commander, cb, name);
+
+  dispatch(commander, {
+    type: REGISTER_COMMAND,
+    payload: {
+      name,
+      description,
+      childActor,
+    }
   });
+};
+
+const createCommander = (system) => {
+  commander = spawn(system, async (state = {}, msg, ctx) => {
+    const { payload } = msg;
+    const { name } = payload;
+
+    switch (msg.type) {
+
+      case REGISTER_COMMAND:
+        return {
+          ...state,
+          [name]: payload,
+        };
+
+      case INVOKE_COMMAND:
+        const child = ctx.children.get(name);
+        if (child) {
+          dispatch(child, msg);
+        } else {
+          console.error(`No command found with the name ${name}`);
+        }
+        break;
+
+      case GET_COMMAND_LIST:
+        const commands = Object.keys(state)
+        .map(commandName => ({
+          name: commandName,
+          description: state[commandName].description,
+        }));
+        dispatch(msg.payload.sender, commands);
+        break;
+
+      default:
+      throw Error(`invalid message type in commander: ${msg.type}`);
+    }
+  }, 'commander');
+
+  files
+    .filter(filename => filename !== 'index.js')
+    .forEach(filename => {
+      require(`./${filename}`);
+    });
+
+  return commander;
+}
 
 const refreshCommands = async (client) => {
   const rest = new REST({ version: '9' }).setToken(DERP_BOT_TOKEN);
+
+  const commands = await query(commander, (sender) => ({
+    type: GET_COMMAND_LIST,
+    payload: {
+      sender,
+    },
+  }), 250);
+
   const discordCommands = commands
-  .map(command => new SlashCommandBuilder().setName(command.name).setDescription(command.description))
+  .map(command => new SlashCommandBuilder()
+    .setName(command.name)
+    .setDescription(command.description)
+  )
   .map(discordCommand => discordCommand.toJSON());
 
   try {
@@ -41,29 +108,19 @@ const refreshCommands = async (client) => {
   }
 };
 
-const createCommander = (system) => {
-  const commandsByName = commands
-    .reduce((all, current) => {
-      all[current.name] = current;
-      return all;
-  }, {});
-
-  return spawnStateless(system, async (msg, ctx) => {
-    const { interaction } = msg;
-    const { commandName } = interaction;
-
-    let childCommand;
-    if (ctx.children.has(commandName)) {
-      childCommand = ctx.children.get(commandName);
-    } else {
-      childCommand = commandsByName[commandName].spawn(ctx.self);
-    }
-
-    dispatch(childCommand, msg);
-  }, 'commander');
-}
+const dispatchCommand = (interaction) => {
+    dispatch(commander, {
+      type: INVOKE_COMMAND,
+      payload: {
+        name: interaction.commandName,
+        interaction
+      },
+    });
+};
 
 module.exports = {
+  registerCommand,
   createCommander,
   refreshCommands,
+  dispatchCommand,
 };

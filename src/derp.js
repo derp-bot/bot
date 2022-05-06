@@ -8,10 +8,11 @@ const {
 } = require('./config');
 const { Client, Intents } = require('discord.js');
 const { start, dispatch, spawn } = require('nact');
-const { createCommander, refreshCommands } = require('./commands');
+const { createCommander, refreshCommands, dispatchCommand } = require('./commands');
 
 const system = start();
-const commander = createCommander(system);
+
+createCommander(system);
 
 console.log(`Starting the derp sha:${GITHUB_SHA || 'unknown'} branch:${GITHUB_BRANCH || 'unknown'}`);
 
@@ -28,9 +29,10 @@ client.on('ready', () => {
   refreshCommands(client);
 });
 
-client.on('interactionCreate', async interaction => {
-  if (!interaction.isCommand()) return;
-  dispatch(commander, { interaction, });
+client.on('interactionCreate', async (interaction) => {
+  if (interaction.isCommand()) {
+    dispatchCommand(interaction);
+  }
 });
 
 client.login(DERP_BOT_TOKEN);

@@ -1,9 +1,6 @@
-const { spawnStateless } = require('nact');
+const { registerCommand } = require('./index');
 
-module.exports = {
-  name: 'ping',
-  description: 'Replies with pong!',
-  spawn: (parent) => spawnStateless(parent, (msg) => {
-    msg.interaction.reply('Pong!');
-  }, 'ping'),
-};
+registerCommand('ping', 'Replies with pong!', (msg) => {
+  msg.payload.interaction.reply('Pong!');
+});
+
