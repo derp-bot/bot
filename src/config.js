@@ -3,7 +3,6 @@ const requiredEnv = [
 ];
 
 const otherEnv = [
-  'GITHUB_BRANCH',
   'GITHUB_SHA',
 ];
 

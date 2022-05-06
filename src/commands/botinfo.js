@@ -1,5 +1,5 @@
 const { registerCommand } = require('./index');
-const { GITHUB_SHA, GITHUB_BRANCH } = require('../config');
+const { GITHUB_SHA } = require('../config');
 const { inlineCode, hyperlink } = require('@discordjs/builders');
 
 registerCommand(
