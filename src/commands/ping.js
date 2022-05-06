@@ -1,6 +1,9 @@
 const { registerCommand } = require('./index');
 
-registerCommand('ping', 'Replies with pong!', (msg) => {
-  msg.payload.interaction.reply('Pong!');
+registerCommand('ping', 'Replies with pong!', async (msg) => {
+  await msg.payload.interaction.reply({
+    content: 'Pong!',
+    ephemeral: true,
+  });
 });
 
