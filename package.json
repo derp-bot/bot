@@ -5,7 +5,7 @@
   "main": "src/derp.js",
   "private": "true",
   "scripts": {
-    "dev": "nodemon",
+    "dev": "DEBUG=true nodemon",
     "start": "node src/derp.js",
     "docker:build": "./scripts/docker-build.sh",
     "docker:run": "./scripts/docker-run.sh"
@@ -27,9 +27,9 @@
     "bufferutil": "4.0.6",
     "discord-api-types": "0.26.1",
     "discord.js": "13.6.0",
-    "dotenv": "14.2.0",
     "erlpack": "github:discord/erlpack",
     "nact": "7.6.0",
+    "simplog": "0.2.4",
     "utf-8-validate": "5.0.8",
     "zlib-sync": "0.1.7"
   },

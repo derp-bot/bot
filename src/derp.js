@@ -1,6 +1,3 @@
-// Initialize our environment.
-require('dotenv').config();
-
 const {
   DERP_BOT_TOKEN,
   GITHUB_SHA,
@@ -8,12 +5,13 @@ const {
 const { Client, Intents } = require('discord.js');
 const { start, dispatch, spawn } = require('nact');
 const { createCommander, refreshCommands, dispatchCommand } = require('./commands');
+const log = require('simplog');
 
 const system = start();
 
 createCommander(system);
 
-console.log(`Starting the derp sha:${GITHUB_SHA || 'unknown'}`);
+log.info(`Starting the derp sha:${GITHUB_SHA || 'unknown'}`);
 
 const client = new Client({
   intents: [
@@ -22,7 +20,7 @@ const client = new Client({
 });
 
 client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+  log.debug(`Logged in as ${client.user.tag}!`);
 
   // Now that we're logged in, refresh our commands.
   refreshCommands(client);

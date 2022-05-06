@@ -4,6 +4,7 @@ const { DERP_BOT_TOKEN } = require('../config');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { dispatch, spawnStateless, spawn, query } = require('nact');
 const { readdirSync } = require('fs');
+const log = require('simplog');
 
 const REGISTER_COMMAND = Symbol('register-command');
 const INVOKE_COMMAND = Symbol('invoke-command');
@@ -12,14 +13,26 @@ const GET_COMMAND_LIST = Symbol('get-command-list');
 const files = readdirSync(__dirname);
 let commander;
 
-const registerCommand = (name, description, cb) => {
+const registerCommand = (commandSpec) => {
+  const {
+    name,
+    description,
+    cb,
+  } = commandSpec;
+
+  if (!name) {
+    throw Error('name is required');
+  }
+  if (!description) {
+    throw Error('description is required');
+  }
+
   const childActor = spawnStateless(commander, cb, name);
 
   dispatch(commander, {
     type: REGISTER_COMMAND,
     payload: {
-      name,
-      description,
+      ...commandSpec,
       childActor,
     }
   });
@@ -50,8 +63,7 @@ const createCommander = (system) => {
       case GET_COMMAND_LIST:
         const commands = Object.keys(state)
         .map(commandName => ({
-          name: commandName,
-          description: state[commandName].description,
+          ...state[commandName],
         }));
         dispatch(msg.payload.sender, commands);
         break;
@@ -81,30 +93,42 @@ const refreshCommands = async (client) => {
   }), 250);
 
   const discordCommands = commands
-  .map(command => new SlashCommandBuilder()
-    .setName(command.name)
-    .setDescription(command.description)
-  )
+  .map(commandSpec => {
+    let newCommand = new SlashCommandBuilder()
+    .setName(commandSpec.name)
+    .setDescription(commandSpec.description)
+    .setDefaultPermission(true);
+
+    if (commandSpec.options) {
+      commandSpec.options.forEach(optionSpec => {
+        newCommand = newCommand.addStringOption(option => option.setName(optionSpec.name)
+          .setDescription(optionSpec.description)
+          .setRequired(true));
+      });
+    }
+
+    return newCommand;
+  })
   .map(discordCommand => discordCommand.toJSON());
 
   try {
-    console.log('Started refreshing application commands...');
+    log.debug('Started refreshing application commands...');
 
-    console.log(`Fetching guilds...`);
+    log.debug(`Fetching guilds...`);
     // In the future this should page, no need to do that now.
     const guilds = await client.guilds.fetch();
-    console.log(`Found ${guilds.size} guilds.`);
+    log.debug(`Found ${guilds.size} guilds.`);
 
-    console.log(`Sending application guild commands...`);
+    log.debug(`Sending application guild commands...`);
     const requests = guilds.map(guild => rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), {
       body: discordCommands,
     }));
 
     await Promise.all(requests);
 
-    console.log('Successfully reloaded application commands.');
+    log.debug('Successfully reloaded application commands.');
   } catch (error) {
-    console.error(error);
+    log.error(error);
   }
 };
 
