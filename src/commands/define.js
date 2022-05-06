@@ -1,4 +1,6 @@
 const { registerCommand } = require('./index');
+const { WORDNIK_API_KEY } = require('../config');
+const log = require('simplog');
 
 registerCommand({
   name: 'define',
@@ -8,7 +10,16 @@ registerCommand({
     description: 'The word you want me to define.',
   }],
   cb: async (msg) => {
-    await msg.payload.interaction.reply('define!');
+    if (!WORDNIK_API_KEY) {
+      try {
+        await msg.payload.interaction.reply('Aww, that sucks, looks like someone forgot to give me a Wordnik API key. No definition for you!');
+        const message = await msg.payload.interaction.fetchReply();
+        await message.react('🐛');
+      } catch (err) {
+        log.error(`Error trying to respond with no wordnik definition: ${error}`);
+      }
+      return;
+    }
   },
 });
 

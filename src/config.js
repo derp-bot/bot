@@ -4,6 +4,7 @@ const requiredEnv = [
 
 const otherEnv = [
   'GITHUB_SHA',
+  'WORDNIK_API_KEY',
 ];
 
 
