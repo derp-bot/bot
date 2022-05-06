@@ -3,7 +3,6 @@ require('dotenv').config();
 
 const {
   DERP_BOT_TOKEN,
-  GITHUB_BRANCH,
   GITHUB_SHA,
 } = require('./config');
 const { Client, Intents } = require('discord.js');
@@ -14,7 +13,7 @@ const system = start();
 
 createCommander(system);
 
-console.log(`Starting the derp sha:${GITHUB_SHA || 'unknown'} branch:${GITHUB_BRANCH || 'unknown'}`);
+console.log(`Starting the derp sha:${GITHUB_SHA || 'unknown'}`);
 
 const client = new Client({
   intents: [
