@@ -1,35 +1,49 @@
-const {
-  DERP_BOT_TOKEN,
-  GITHUB_SHA,
-} = require('./config');
-const { Client, Intents } = require('discord.js');
-const { start, dispatch, spawn } = require('nact');
-const { createCommander, refreshCommands, dispatchCommand } = require('./commands');
-const log = require('simplog');
+import { Client, Intents } from 'discord.js';
+import { SlashCommandsManager } from './managers/slashCommands.js';
+import log from 'simplog';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import { readdir } from 'fs';
 
-const system = start();
+export class Derp extends Client {
+  constructor() {
+    super({
+      intents: [
+        Intents.FLAGS.GUILDS,
+      ]
+    });
 
-createCommander(system);
+    this.slashCommands = new SlashCommandsManager(this);
 
-log.info(`Starting the derp sha:${GITHUB_SHA || 'unknown'}`);
+    this.on('ready', () => this.initialize());
+    this.on('interactionCreate', interaction => this.slashCommands.onSlashCommand(interaction));
 
-const client = new Client({
-  intents: [
-    Intents.FLAGS.GUILDS,
-  ],
-});
+    // Load all our slash commands.
+    const commandsPath = fileURLToPath(import.meta.url);
+    const commandsDir = join(dirname(commandsPath), 'commands');
+    readdir(commandsDir, async (err, files) => {
+      if (err) {
+        log.error(`Error reading commands: ${err}`);
+        return;
+      }
 
-client.on('ready', () => {
-  log.debug(`Logged in as ${client.user.tag}!`);
+      files.forEach(async (file) => {
+        try {
+          log.debug(`Loading ${file}...`)
+          const commandModule = await import(join(commandsDir, file));
+          commandModule.default(this.slashCommands);
+        } catch (err) {
+          log.error(`Error reading ${file}: ${err}`);
+        }
+      });
 
-  // Now that we're logged in, refresh our commands.
-  refreshCommands(client);
-});
+      log.debug('Done.');
 
-client.on('interactionCreate', async (interaction) => {
-  if (interaction.isCommand()) {
-    dispatchCommand(interaction);
+    });
   }
-});
 
-client.login(DERP_BOT_TOKEN);
+  initialize() {
+    this.slashCommands.refreshCommands();
+  }
+
+}

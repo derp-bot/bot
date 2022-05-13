@@ -2,14 +2,15 @@
   "name": "@derp-bot/bot",
   "description": "The actual bot itself.",
   "version": "0.0.2",
-  "main": "src/derp.js",
+  "exports": "./src/derp.js",
   "private": "true",
   "scripts": {
-    "dev": "DEBUG=true nodemon",
-    "start": "node src/derp.js",
+    "dev": "DEBUG=true GITHUB_SHA=$(git rev-parse --short HEAD) nodemon src/main.js",
+    "start": "node src/main.js",
     "docker:build": "./scripts/docker-build.sh",
     "docker:run": "./scripts/docker-run.sh"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/derp-bot/bot.git"
@@ -27,7 +28,9 @@
     "bufferutil": "4.0.6",
     "discord-api-types": "0.26.1",
     "discord.js": "13.6.0",
+    "dotenv": "16.0.0",
     "erlpack": "github:discord/erlpack",
+    "got": "12.0.4",
     "nact": "7.6.0",
     "simplog": "0.2.4",
     "utf-8-validate": "5.0.8",
@@ -35,5 +38,8 @@
   },
   "devDependencies": {
     "nodemon": "2.0.15"
+  },
+  "engines": {
+    "node": ">=16.10"
   }
 }

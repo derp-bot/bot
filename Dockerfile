@@ -1,4 +1,5 @@
 FROM node:16.13.2-alpine AS builder
+ENV NODE_ENV production
 RUN apk add --no-cache --virtual .gyp \
   libc6-compat \
   python3 \
@@ -30,4 +31,4 @@ USER nodejs
 
 EXPOSE 3000
 
-CMD ["node", "src/derp.js"]
+CMD ["node", "src/main.js"]

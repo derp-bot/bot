@@ -1,13 +1,18 @@
-const { registerCommand } = require('./index');
+import { SlashCommandBuilder } from '@discordjs/builders';
 
-registerCommand({
-  name: 'ping',
-  description: 'Replies with pong!',
-  cb: async (msg) => {
-    await msg.payload.interaction.reply({
-      content: 'Pong!',
-      ephemeral: true,
-    });
-  }
-});
+export default function(slashCommands) {
+
+  slashCommands.addCommand(
+    new SlashCommandBuilder()
+      .setName('ping')
+      .setDescription('Replies with pong!'),
+    async (derp, interaction) => {
+      await interaction.reply({
+        content: 'Pong!',
+        ephemeral: true,
+      });
+    },
+  );
+
+}
 
