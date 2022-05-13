@@ -26,19 +26,13 @@ export class SlashCommandsManager {
     try {
       log.debug('Started refreshing application commands...');
 
-      if (isProduction) {
-        log.debug('Setting commands globally...');
-        await this.derp.application.commands.set(discordCommands);
+      log.debug(`Fetching guilds...`);
+      const guilds = await this.derp.guilds.fetch();
+      log.debug(`Found ${guilds.size} guilds.`);
 
-      } else {
-        log.debug(`Fetching guilds...`);
-        const guilds = await this.derp.guilds.fetch();
-        log.debug(`Found ${guilds.size} guilds.`);
-
-        log.debug(`Sending ${discordCommands.length} guild commands...`);
-        const requests = guilds.map(guild => this.derp.guilds.resolve(guild.id).commands.set(discordCommands));
-        await Promise.all(requests);
-      }
+      log.debug(`Sending ${discordCommands.length} guild commands...`);
+      const requests = guilds.map(guild => this.derp.guilds.resolve(guild.id).commands.set(discordCommands));
+      await Promise.all(requests);
 
       log.debug('Successfully sent application commands.');
     } catch (error) {
