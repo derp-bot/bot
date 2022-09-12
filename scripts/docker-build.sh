@@ -5,6 +5,6 @@ IMAGE_TAG="development"
 
 DOCKER_BUILDKIT=1 docker build \
   --ssh default \
-  --build-arg "GITHUB_SHA=$(git rev-parse --short HEAD)" \
+  --build-arg "GIT_SHA=$(git rev-parse --short HEAD)" \
   -t "${IMAGE_NAME}:${IMAGE_TAG}" \
   .
