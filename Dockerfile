@@ -24,6 +24,7 @@ COPY --from=builder /app/derp ./
 RUN addgroup -g 1001 -S derpbot
 RUN adduser -S derpbot -u 1001
 
+ARG GITHUB_SHA
 ENV GITHUB_SHA=$GITHUB_SHA
 
 USER derpbot
