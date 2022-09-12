@@ -1,0 +1,23 @@
+version: '3.7'
+
+services:
+
+  watchtower:
+    image: containrrr/watchtower
+    restart: unless-stopped
+    container_name: watchtower
+    environment:
+      - WATCHTOWER_POLL_INTERVAL=1800
+      - WATCHTOWER_CLEANUP=true
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - '/root/.docker/config.json:/config.json'
+
+  derp:
+    image: ghcr.io/derp-bot/bot:latest
+    container_name: derp-bot
+    restart: unless-stopped
+    environment:
+      - DERP_BOT_TOKEN=$DERP_BOT_TOKEN
+      - WORDNIK_API_KEY=$WORDNIK_API_KEY
+
